@@ -76,8 +76,6 @@ public class JpaBatchConfigurer implements BatchConfigurer {
         return jobExplorer;
     }
 
-
-
     @Bean
     public ListableJobLocator getListableJobLocator() {
         return listableJobLocator;

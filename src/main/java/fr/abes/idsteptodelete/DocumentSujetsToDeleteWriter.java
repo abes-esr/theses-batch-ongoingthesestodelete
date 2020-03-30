@@ -17,6 +17,7 @@ public class DocumentSujetsToDeleteWriter implements ItemWriter<DocumentSujets> 
     public void write(List<? extends DocumentSujets> list) throws Exception {
         //sujetsRepository.saveAll(list);
         System.out.println("ok");
+        System.out.println("list = " + list.get(0).getIddoc().toString()); //contient les objets DocumentSujets
 
     }
 }
