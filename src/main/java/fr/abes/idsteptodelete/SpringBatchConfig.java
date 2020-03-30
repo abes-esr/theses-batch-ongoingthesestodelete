@@ -27,7 +27,7 @@ import javax.sql.DataSource;
 
 
 @Configuration
-@EnableBatchProcessing
+//@EnableBatchProcessing
 public class SpringBatchConfig {
     @Autowired private JobBuilderFactory jobBuilderFactory;
     @Autowired private StepBuilderFactory stepBuilderFactory;
