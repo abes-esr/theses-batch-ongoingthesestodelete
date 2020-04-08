@@ -1,5 +1,7 @@
 package fr.abes.idsteptodeletetest.config;
 
+import com.zaxxer.hikari.HikariConfig;
+import com.zaxxer.hikari.HikariDataSource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.jdbc.DataSourceProperties;
 import org.springframework.boot.context.properties.ConfigurationProperties;
@@ -39,7 +41,7 @@ public class SujetsConfig
         return new DataSourceProperties();
     }
 
-    @Primary
+    /*@Primary
     @Bean(name= "sujetsDataSource")
     public DataSource sujetsDataSource() {
         DataSourceProperties sujetsDataSourceProperties = sujetsDataSourceProperties();
@@ -49,7 +51,33 @@ public class SujetsConfig
                 .username(sujetsDataSourceProperties.getUsername())
                 .password(sujetsDataSourceProperties.getPassword())
                 .build();
+    }*/
+    @Primary
+    @Bean(name= "sujetsDataSource")
+    public DataSource sujetsDataSource() {
+        HikariConfig config = new HikariConfig();
+        config.setJdbcUrl(env.getProperty("sujets.datasource.url"));
+        config.setUsername(env.getProperty("sujets.datasource.username"));
+        config.setPassword(env.getProperty("sujets.datasource.password"));
+        config.setDriverClassName(env.getProperty("sujets.datasource.driver-class-name"));
+        config.setIdleTimeout(230000);
+        config.setMaxLifetime(240000);
+        config.setInitializationFailTimeout(0);
+        config.setMinimumIdle(2);
+        config.setAllowPoolSuspension(true);
+        config.setConnectionTimeout(30000);
+        config.getMetricsTrackerFactory();
+        config.getMetricRegistry();
+        config.setMaximumPoolSize(5);
+        config.addDataSourceProperty("validationInterval", env.getProperty("sujets.datasource.validationInterval"));
+        config.addDataSourceProperty("testOnBorrow", env.getProperty("sujets.datasource.testOnBorrow"));
+        config.addDataSourceProperty("testWhileIdle", env.getProperty("sujets.datasource.testWhileIdle"));
+        config.addDataSourceProperty("testOnReturn", env.getProperty("sujets.datasource.testOnReturn"));
+        config.addDataSourceProperty("timeBetweenEvictionRunsMillis", env.getProperty("sujets.datasource.timeBetweenEvictionRunsMillis"));
+        config.addDataSourceProperty("validationQuery", env.getProperty("sujets.datasource.validationQuery"));
+        return new HikariDataSource(config);
     }
+
 
     @Primary
     @Bean

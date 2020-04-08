@@ -1,5 +1,7 @@
 package fr.abes.idsteptodeletetest.config;
 
+import com.zaxxer.hikari.HikariConfig;
+import com.zaxxer.hikari.HikariDataSource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.jdbc.DataSourceProperties;
 import org.springframework.boot.context.properties.ConfigurationProperties;
@@ -49,6 +51,31 @@ public class StarConfig {
                 .password(primaryDataSourceProperties.getPassword())
                 .build();
     }
+
+    /*@Bean
+    public DataSource starDataSource() {
+        HikariConfig config = new HikariConfig();
+        config.setJdbcUrl(env.getProperty("star.datasource.url"));
+        config.setUsername(env.getProperty("star.datasource.username"));
+        config.setPassword(env.getProperty("star.datasource.password"));
+        config.setDriverClassName(env.getProperty("star.datasource.driver-class-name"));
+        config.setIdleTimeout(230000);
+        config.setMaxLifetime(240000);
+        config.setInitializationFailTimeout(0);
+        config.setMinimumIdle(2);
+        config.setAllowPoolSuspension(true);
+        config.setConnectionTimeout(30000);
+        config.getMetricsTrackerFactory();
+        config.getMetricRegistry();
+        config.setMaximumPoolSize(5);
+        config.addDataSourceProperty("validationInterval", env.getProperty("star.datasource.validationInterval"));
+        config.addDataSourceProperty("testOnBorrow", env.getProperty("star.datasource.testOnBorrow"));
+        config.addDataSourceProperty("testWhileIdle", env.getProperty("star.datasource.testWhileIdle"));
+        config.addDataSourceProperty("testOnReturn", env.getProperty("star.datasource.testOnReturn"));
+        config.addDataSourceProperty("timeBetweenEvictionRunsMillis", env.getProperty("star.datasource.timeBetweenEvictionRunsMillis"));
+        config.addDataSourceProperty("validationQuery", env.getProperty("star.datasource.validationQuery"));
+        return new HikariDataSource(config);
+    }*/
 
     @Bean
     public PlatformTransactionManager starTransactionManager() {

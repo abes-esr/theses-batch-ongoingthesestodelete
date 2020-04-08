@@ -1,5 +1,12 @@
 package fr.abes.testrestcontrollerinterface;
 
+import org.springframework.batch.core.Job;
+import org.springframework.batch.core.JobExecution;
+import org.springframework.batch.core.JobParameter;
+import org.springframework.batch.core.JobParameters;
+import org.springframework.batch.core.launch.JobLauncher;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.autoconfigure.batch.BatchAutoConfiguration;
@@ -9,13 +16,17 @@ import org.springframework.boot.autoconfigure.orm.jpa.HibernateJpaAutoConfigurat
 import org.springframework.context.ApplicationContext;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
 
+import java.util.HashMap;
+import java.util.Map;
+
+
 
 @SpringBootApplication(//scanBasePackages = {"fr.abes.idsteptodeletetest.JpaBatchConfigurer"},
         //scanBasePackageClasses = fr.abes.idsteptodeletetest.JpaBatchConfigurer.class,
         exclude = { DataSourceAutoConfiguration.class,
                 HibernateJpaAutoConfiguration.class,
                 DataSourceTransactionManagerAutoConfiguration.class,
-        BatchAutoConfiguration.class})
+                BatchAutoConfiguration.class})
 @EnableTransactionManagement
 
 public class TestrestcontrollerinterfaceApplication  {
@@ -24,6 +35,7 @@ public class TestrestcontrollerinterfaceApplication  {
         ApplicationContext ctx = SpringApplication.run(TestrestcontrollerinterfaceApplication.class, args);
         //SpringApplication.run(TestrestcontrollerinterfaceApplication.class, args);
     }
+
 
 
 

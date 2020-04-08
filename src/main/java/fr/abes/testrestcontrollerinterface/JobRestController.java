@@ -1,4 +1,6 @@
+
 package fr.abes.testrestcontrollerinterface;
+
 
 import fr.abes.idsteptodeletetest.JpaBatchConfigurer;
 import org.springframework.batch.core.Job;
@@ -26,7 +28,8 @@ public class JobRestController {
     private JpaBatchConfigurer jpaBatchConfigurer;
 
 
-    /*@GetMapping("/startJobIdStepToDelete")
+
+/*@GetMapping("/startJobIdStepToDelete")
     public BatchStatus load() throws Exception{
 
         Map<String, JobParameter> params = new HashMap<>();
@@ -38,6 +41,7 @@ public class JobRestController {
         }
         return jobExecution.getStatus();
     }*/
+
     @GetMapping("/startJobIdStepToDelete")
     public void load() throws Exception {
         jpaBatchConfigurer = (JpaBatchConfigurer) ctx.getBean("JpaBatchConfigurer");
@@ -51,3 +55,4 @@ public class JobRestController {
     }
 
 }
+

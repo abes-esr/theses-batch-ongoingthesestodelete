@@ -56,6 +56,9 @@ public class SpringBatchConfig {
                 .reader(documentSujetsToDeleteReader)
                 .processor(documentSujetsToDeleteProcessor) //si on a un seul processor
                 .writer(documentSujetsToDeleteWriter)
+                .faultTolerant()
+                .retry(Exception.class)
+                .retryLimit(6)
                 .build();
 
         return jobBuilderFactory.get("idStepToDelete-job")
@@ -85,5 +88,25 @@ public class SpringBatchConfig {
         return lineMapper;
 
     }
+
+    /*@Bean("unautrejob")
+    public Job unAutreJob() {
+
+
+        DataSource datasource;
+
+        Step step1=stepBuilderFactory.get("step-delete-data")
+                .<DocumentSujets,DocumentSujets>chunk(100)
+                .reader(documentSujetsToDeleteReader)
+                .processor(documentSujetsToDeleteProcessor) //si on a un seul processor
+                .writer(documentSujetsToDeleteWriter)
+                .faultTolerant()
+                .retry(Exception.class)
+                .retryLimit(6)
+                .build();
+
+        return jobBuilderFactory.get("unautre-job")
+                .start(step1).build();
+    }*/
 
 }

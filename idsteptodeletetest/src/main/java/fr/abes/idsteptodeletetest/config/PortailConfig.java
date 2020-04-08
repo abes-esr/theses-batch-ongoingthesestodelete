@@ -1,5 +1,7 @@
 package fr.abes.idsteptodeletetest.config;
 
+import com.zaxxer.hikari.HikariConfig;
+import com.zaxxer.hikari.HikariDataSource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.jdbc.DataSourceProperties;
 import org.springframework.boot.context.properties.ConfigurationProperties;
@@ -46,6 +48,43 @@ public class PortailConfig
                 .password(portailDataSourceProperties.getPassword())
                 .build();
     }
+
+    /*@Bean
+    public DataSource portailDataSource() {
+        HikariConfig config = new HikariConfig();
+        config.setJdbcUrl(env.getProperty("portail.datasource.url"));
+        config.setUsername(env.getProperty("portail.datasource.username"));
+        config.setPassword(env.getProperty("portail.datasource.password"));
+        config.setDriverClassName(env.getProperty("portail.datasource.driver-class-name"));
+        config.setIdleTimeout(230000);
+        config.setMaxLifetime(240000);
+        config.setInitializationFailTimeout(0);
+        config.setMinimumIdle(2);
+        config.setAllowPoolSuspension(true);
+        config.setConnectionTimeout(30000);
+        config.getMetricsTrackerFactory();
+        config.getMetricRegistry();
+        config.setMaximumPoolSize(5);
+        *//*config.setDataSourceProperties(portailDataSourceProperties);
+        portailDataSourceProperties.setProperty("validationInterval", env.getProperty("portail.datasource.validationInterval"));
+        portailDataSourceProperties.setProperty("testOnBorrow", env.getProperty("portail.datasource.testOnBorrow"));
+        portailDataSourceProperties.setProperty("testWhileIdle", env.getProperty("portail.datasource.testWhileIdle"));
+        portailDataSourceProperties.setProperty("testOnReturn", env.getProperty("portail.datasource.testOnReturn"));
+        portailDataSourceProperties.setProperty("timeBetweenEvictionRunsMillis", env.getProperty("portail.datasource.timeBetweenEvictionRunsMillis"));
+        portailDataSourceProperties.setProperty("validationQuery", env.getProperty("portail.datasource.validationQuery"));*//*
+
+        config.addDataSourceProperty("validationInterval", env.getProperty("portail.datasource.validationInterval"));
+        config.addDataSourceProperty("testOnBorrow", env.getProperty("portail.datasource.testOnBorrow"));
+        config.addDataSourceProperty("testWhileIdle", env.getProperty("portail.datasource.testWhileIdle"));
+        config.addDataSourceProperty("testOnReturn", env.getProperty("portail.datasource.testOnReturn"));
+        config.addDataSourceProperty("timeBetweenEvictionRunsMillis", env.getProperty("portail.datasource.timeBetweenEvictionRunsMillis"));
+        config.addDataSourceProperty("validationQuery", env.getProperty("portail.datasource.validationQuery"));
+        //config.addDataSourceProperty("cachePrepStmts", "true");
+        //config.addDataSourceProperty("prepStmtCacheSize", "250");
+        //config.addDataSourceProperty("prepStmtCacheSqlLimit", "2048");
+        return new HikariDataSource(config);
+
+    }*/
 
     @Bean
     public PlatformTransactionManager portailTransactionManager()
