@@ -52,30 +52,48 @@ public class SujetsConfig
                 .password(sujetsDataSourceProperties.getPassword())
                 .build();
     }*/
+
     @Primary
     @Bean(name= "sujetsDataSource")
     public DataSource sujetsDataSource() {
         HikariConfig config = new HikariConfig();
+        config.setDriverClassName(env.getProperty("sujets.datasource.driver-class-name"));
+        //config.setDataSourceClassName(env.getProperty("sujets.datasource.class-name"));
         config.setJdbcUrl(env.getProperty("sujets.datasource.url"));
         config.setUsername(env.getProperty("sujets.datasource.username"));
         config.setPassword(env.getProperty("sujets.datasource.password"));
-        config.setDriverClassName(env.getProperty("sujets.datasource.driver-class-name"));
-        config.setIdleTimeout(230000);
-        config.setMaxLifetime(240000);
-        config.setInitializationFailTimeout(0);
-        config.setMinimumIdle(2);
-        config.setAllowPoolSuspension(true);
+        //Frequently used
+        config.setAutoCommit(false);
         config.setConnectionTimeout(30000);
+        config.setIdleTimeout(35000);
+        config.setMaxLifetime(45000);
+        config.setMinimumIdle(1);
+        config.setMaximumPoolSize(2);
         config.getMetricsTrackerFactory();
         config.getMetricRegistry();
-        config.setMaximumPoolSize(5);
-        config.addDataSourceProperty("validationInterval", env.getProperty("sujets.datasource.validationInterval"));
-        config.addDataSourceProperty("testOnBorrow", env.getProperty("sujets.datasource.testOnBorrow"));
-        config.addDataSourceProperty("testWhileIdle", env.getProperty("sujets.datasource.testWhileIdle"));
-        config.addDataSourceProperty("testOnReturn", env.getProperty("sujets.datasource.testOnReturn"));
-        config.addDataSourceProperty("timeBetweenEvictionRunsMillis", env.getProperty("sujets.datasource.timeBetweenEvictionRunsMillis"));
-        config.addDataSourceProperty("validationQuery", env.getProperty("sujets.datasource.validationQuery"));
+        config.getHealthCheckProperties();
+        config.setPoolName("poolSujetsOnGoingToDelete");
+        //Infrequently used
+        config.setInitializationFailTimeout(0);
+        //config.setIsolateInternalQueries(true);
+        config.setAllowPoolSuspension(true);
+        config.setLeakDetectionThreshold(40000);
+        config.setValidationTimeout(2500);
+        config.setConnectionTestQuery("SELECT 1 FROM DUAL");
+
+        //config.addDataSourceProperty("validationInterval", env.getProperty("sujets.datasource.validationInterval"));
+        //config.addDataSourceProperty("testOnBorrow", env.getProperty("sujets.datasource.testOnBorrow"));
+        //config.addDataSourceProperty("testWhileIdle", env.getProperty("sujets.datasource.testWhileIdle"));
+        //config.addDataSourceProperty("testOnReturn", env.getProperty("sujets.datasource.testOnReturn"));
+        //config.addDataSourceProperty("timeBetweenEvictionRunsMillis", env.getProperty("sujets.datasource.timeBetweenEvictionRunsMillis"));
+        //config.addDataSourceProperty("validationQuery", env.getProperty("sujets.datasource.validationQuery"));
+        config.addDataSourceProperty("implicitCachingEnabled", "true"); //spec oracle
+        config.addDataSourceProperty("maxStatements", "250"); //spec oracle
+        //config.addDataSourceProperty("prepStmtCacheSize", "250");
+        //config.addDataSourceProperty("prepStmtCacheSqlLimit", "2048");
+
         return new HikariDataSource(config);
+
     }
 
 
