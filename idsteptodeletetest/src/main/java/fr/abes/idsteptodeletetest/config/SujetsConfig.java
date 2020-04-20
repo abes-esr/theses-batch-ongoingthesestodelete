@@ -23,7 +23,6 @@ import java.util.Properties;
 
 
 @Configuration
-//
 @EnableJpaRepositories(
         basePackages = "fr.abes.idsteptodeletetest.sujets.repositories",
         entityManagerFactoryRef = "sujetsEntityManagerFactory",
@@ -67,8 +66,8 @@ public class SujetsConfig
         config.setConnectionTimeout(30000);
         config.setIdleTimeout(35000);
         config.setMaxLifetime(45000);
-        config.setMinimumIdle(1);
-        config.setMaximumPoolSize(2);
+        //config.setMinimumIdle(1);
+        config.setMaximumPoolSize(1);
         config.getMetricsTrackerFactory();
         config.getMetricRegistry();
         config.getHealthCheckProperties();

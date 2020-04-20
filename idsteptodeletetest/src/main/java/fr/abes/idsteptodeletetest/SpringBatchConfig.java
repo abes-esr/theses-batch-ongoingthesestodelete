@@ -45,7 +45,7 @@ public class SpringBatchConfig {
     private ItemPreparedStatementSetter<DocumentSujets> setter;
 
 
-    @Bean("idStepToDeleteJob")
+    @Bean("idStepToDeleteJobBean")
     public Job idStepToDeleteJob() {
 
 
@@ -61,7 +61,7 @@ public class SpringBatchConfig {
                 .retryLimit(6)
                 .build();
 
-        return jobBuilderFactory.get("idStepToDelete-job")
+        return jobBuilderFactory.get("idStepToDelete-jobName")
                 .start(step1).build();
     }
 
@@ -89,13 +89,13 @@ public class SpringBatchConfig {
 
     }
 
-    /*@Bean("unautrejob")
+    @Bean("unautrejobBean")
     public Job unAutreJob() {
 
 
         DataSource datasource;
 
-        Step step1=stepBuilderFactory.get("step-delete-data")
+        Step step1=stepBuilderFactory.get("unautrejob-delete-data")
                 .<DocumentSujets,DocumentSujets>chunk(100)
                 .reader(documentSujetsToDeleteReader)
                 .processor(documentSujetsToDeleteProcessor) //si on a un seul processor
@@ -105,8 +105,8 @@ public class SpringBatchConfig {
                 .retryLimit(6)
                 .build();
 
-        return jobBuilderFactory.get("unautre-job")
+        return jobBuilderFactory.get("unautre-jobName")
                 .start(step1).build();
-    }*/
+    }
 
 }
