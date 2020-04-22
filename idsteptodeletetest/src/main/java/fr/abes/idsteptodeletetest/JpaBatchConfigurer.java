@@ -1,4 +1,6 @@
-/*
+
+
+
 
 package fr.abes.idsteptodeletetest;
 
@@ -32,6 +34,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
 import org.springframework.core.task.SimpleAsyncTaskExecutor;
+import org.springframework.core.task.SyncTaskExecutor;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.PlatformTransactionManager;
 
@@ -162,6 +165,7 @@ public class JpaBatchConfigurer implements BatchConfigurer {
         SimpleJobLauncher jobLauncher = new SimpleJobLauncher();
         jobLauncher.setJobRepository(jobRepository);
         jobLauncher.setTaskExecutor( new SimpleAsyncTaskExecutor());
+        //jobLauncher.setTaskExecutor( new SyncTaskExecutor());
         jobLauncher.afterPropertiesSet();
         return jobLauncher;
     }
@@ -169,6 +173,7 @@ public class JpaBatchConfigurer implements BatchConfigurer {
     protected JobRepository createJobRepository() throws Exception {
         JobRepositoryFactoryBean factory = new JobRepositoryFactoryBean();
         factory.setIsolationLevelForCreate("ISOLATION_SERIALIZABLE");
+        //factory.setIsolationLevelForCreate("ISOLATION_DEFAULT");
         factory.setDataSource(dataSource);
         factory.setTransactionManager(transactionManager);
         factory.setValidateTransactionState(false);
@@ -192,7 +197,9 @@ public class JpaBatchConfigurer implements BatchConfigurer {
     }
 
 
-    */
+
+
+
 /* good but not allowing to get a list of job; we can only lauch one job; in this case, the log output says : skipped thisjob, and this job...
     the JobLauncherCommandLineRunner uses different objects ( the JobRegistry map so it is necessary to register the job before using it)
     @Bean("jobLauncherCommandLineRunner")
@@ -207,10 +214,14 @@ public class JpaBatchConfigurer implements BatchConfigurer {
             //runner.run(jobName);
             return runner;
         }return null;
-    }*//*
+    }*/
+
+
 
 
 
 
 }
-*/
+
+
+

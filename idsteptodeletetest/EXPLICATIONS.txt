@@ -1,0 +1,285 @@
+tests :
+
+1/sans rien dans Application + @Bean("jobLauncherCommandLineRunner")dans jpaBatch commenté ==> rien
+
+2/sans rien dans Application + @Bean("jobLauncherCommandLineRunner") décommenté +
+java -jar idsteptodeletetest-0.0.1-SNAPSHOT.jar ==> déroule les 2 jobs
+
+3/autowired joblaucher + autowire idStepToDeleteJobBean + @Bean("jobLauncherCommandLineRunner")dans jpaBatch commenté +
+java -jar idsteptodeletetest-0.0.1-SNAPSHOT.jar ==>rien
+
+4/autowired joblaucher + autowire idStepToDeleteJobBean + @Bean("jobLauncherCommandLineRunner")dans jpaBatch commenté +
+java -jar idsteptodeletetest-0.0.1-SNAPSHOT.jar unautrejobBean ==> rien
+
+4/autowired joblaucher + autowire idStepToDeleteJobBean + @Bean("jobLauncherCommandLineRunner")dans jpaBatch commenté +
+java -jar idsteptodeletetest-0.0.1-SNAPSHOT.jar idStepToDeleteJobBean ==> rien
+
+4/autowired joblaucher + autowire idStepToDeleteJobBean + @Bean("jobLauncherCommandLineRunner")dans jpaBatch commenté +
+java -jar idsteptodeletetest-0.0.1-SNAPSHOT.jar idStepToDelete-jobName ==> rien
+
+donc là on peut voir que si on a pas de @Bean("jobLauncherCommandLineRunner")dans jpaBatch, la ligne de commande ne marche pas
+pour autowire il faut que le bean existe ailleurs et soit défini.
+
+------------------------------
+
+5/autowired joblaucher + autowire idStepToDeleteJobBean + @Bean("jobLauncherCommandLineRunner")dans jpaBatch commenté +
+implements CommandLineRunner + java -jar idsteptodeletetest-0.0.1-SNAPSHOT.jar  ==> rien
+
+6/autowired joblaucher + autowire idStepToDeleteJobBean + @Bean("jobLauncherCommandLineRunner")dans jpaBatch commenté +
+implements CommandLineRunner + java -jar idsteptodeletetest-0.0.1-SNAPSHOT.jar idStepToDelete-jobName ==> rien
+
+7/autowired joblaucher + autowire idStepToDeleteJobBean + @Bean("jobLauncherCommandLineRunner")dans jpaBatch commenté +
+implements CommandLineRunner + java -jar idsteptodeletetest-0.0.1-SNAPSHOT.jar idStepToDeleteJobBean ==> rien
+
+donc là avec CommandLineRunner ça ne marche pas
+
+----------------------------------
+
+
+8/autowired joblaucher + autowire idStepToDeleteJobBean + @Bean("jobLauncherCommandLineRunner")dans jpaBatch commenté +
+extends CommandLineJobRunner + java -jar idsteptodeletetest-0.0.1-SNAPSHOT.jar  ==> rien
+
+9/autowired joblaucher + autowire idStepToDeleteJobBean + @Bean("jobLauncherCommandLineRunner")dans jpaBatch commenté +
+extends CommandLineJobRunner + java -jar idsteptodeletetest-0.0.1-SNAPSHOT.jar idStepToDeleteJobBean ==> rien
+
+donc rien là non plus
+
+---------------------------------
+
+
+10/autowired joblaucher + autowire idStepToDeleteJobBean + @Bean("jobLauncherCommandLineRunner")dans jpaBatch commenté +
+extends JobLauncherCommandLineRunner + + superconstruct fourni + java -jar idsteptodeletetest-0.0.1-SNAPSHOT.jar
+==> execute les 2 jobs alors que unautrejob est pas autowire
+
+donc 10 = 2; ça revient au même de extends JobLauncherCommandLineRunner que de le définir dans jpabatchconfig
+quand on lance le jar sans nommer de job
+
+-------------------------------------
+
+
+11/autowired joblaucher commenté + autowire idStepToDeleteJobBean commenté + @Bean("jobLauncherCommandLineRunner")dans jpaBatch commenté +
+extends JobLauncherCommandLineRunner + java -jar idsteptodeletetest-0.0.1-SNAPSHOT.jar
+il n'y a rien d'autre dans la classe App que le run + extends JobLauncherCommandLineRunner + superconstruct fourni
+==> execute les 2 jobs
+
+donc exactement comme le 2, n'a besoin de rien d'autre que d'être déclaré
+
+--------------------------------------------------------------------------
+
+12/ le 11 + java -jar idsteptodeletetest-0.0.1-SNAPSHOT.jar idStepToDeleteJobBean
+=> déroule les 2 jobs alors qu'on voudrait un seul
+o.s.b.a.b.JobLauncherCommandLineRunner   : Running default command line with: [idStepToDeleteJobBean]
+
+12/ le 11 + java -jar idsteptodeletetest-0.0.1-SNAPSHOT.jar idStepToDelete-jobName
+=> idem deroule les 2 jobs
+
+
+-------------------------------------
+le code avec jpabatchconfig revient au même que avec l'astuce (sauf que c'est du multithreading par défaut comme avec
+jpabatch si on met:
+jobLauncher.setTaskExecutor( new SimpleAsyncTaskExecutor());
+
+avec config jpabatchconfigurer :
+si on commente //jobLauncher.setTaskExecutor( new SimpleAsyncTaskExecutor());
+on obtient l'execution des jobs dans l'ordre (pas de multithreading, le job 2 démarre que quand le job 1 a terminé)
+voyons donc si en mettant maxconnexionPool à 1 ça marche parceque jusqu'a présent ça marche pas (il faut min 2)
+
+
+
+conclusions :
+attention si on a
+jobLauncher.setTaskExecutor( new SimpleAsyncTaskExecutor());
+alors il faut au min 2 con dans le pool
+donc il faut :
+jobLauncher.setTaskExecutor( new SimpleAsyncTaskExecutor()); +
+config.setMinimumIdle(1);
+config.setMaximumPoolSize(2);
+
+si on a
+jobLauncher.setTaskExecutor( new SyncTaskExecutor());
+on peut avoir
+//config.setMinimumIdle(1);
+config.setMaximumPoolSize(1);
+
+sinon :
+jobLauncher.setTaskExecutor( new SimpleAsyncTaskExecutor()); +
+config.setMaximumPoolSize(1); +
+config.setConnectionTimeout(30000);
+=
+2020-04-22 20:05:32.428 ERROR 11172 --- [cTaskExecutor-1] o.h.engine.jdbc.spi.SqlExceptionHelper   : poolPortailOnGoingToDelete - Connection is not available, request timed out after 30013ms.
+2020-04-22 20:05:32.538 ERROR 11172 --- [cTaskExecutor-1] o.s.batch.core.step.AbstractStep         : Encountered an error executing step step-delete-data in job idStepToDeleteJobName
+
+org.springframework.transaction.CannotCreateTransactionException: Could not open JPA EntityManager for transaction; nested exception is org.hibernate.exception.JDBCConnectionException: Unable to acquire JDBC Connection
+
+
+que se passe t-il si multithread mais temps con plus long mais 1 conn dans le pool quand même?
+config.setConnectionTimeout(180000);
+config.setMaxLifetime(120000);
+config.setMaximumPoolSize(1);
+jobLauncher.setTaskExecutor( new SimpleAsyncTaskExecutor());
+=====> ça ne marche pas!donc timeout n'a rien à voir c'est juste que si multithread, il faut au min 2 conn dans le pool
+
+
+que se passe t-il si pas de multithread mais temps con plus long mais 1 conn dans le pool quand même?
+config.setConnectionTimeout(180000);
+config.setMaxLifetime(120000);
+config.setMaximumPoolSize(1);
+jobLauncher.setTaskExecutor( new SyncTaskExecutor());
+=====> ne marche pas
+org.springframework.beans.factory.UnsatisfiedDependencyException: Error creating bean with name 'springBatchConfig': Unsatisfied dependency expressed through field 'jobBuilderFactory'; nested exception is org.springframework.beans.factory.BeanCreationException: Error creating bean with name 'JpaBatchConfigurer': Invocation of init method failed; nested exception is org.springframework.batch.core.configuration.BatchConfigurationException: org.springframework.beans.factory.BeanCreationException: Error creating bean with name 'idStepToDeleteJobBean' defined in class path resource [fr/abes/idsteptodeletetest/SpringBatchConfig.class]: Bean instantiation via factory method failed; nested exception is org.springframework.beans.BeanInstantiationException: Failed to instantiate [org.springframework.batch.core.Job]: Circular reference involving containing bean 'springBatchConfig' - consider declaring the factory method as static for independence from its containing instance. Factory method 'idStepToDeleteJob' threw exception; nested exception is java.lang.NullPointerException
+        at org.springframework.beans.factory.annotation.AutowiredAnnotationBeanPostProcessor$AutowiredFieldElement.inject(AutowiredAnnotationBeanPostProcessor.java:643) ~[spring-beans-5.2.5.RELEASE.jar!/:5.2.5.RELEASE]
+car la factory bean est configurée avec :
+factory.setIsolationLevelForCreate("ISOLATION_SERIALIZABLE");
+trouvé sur le net :
+//prevent ISOLATION_DEFAULT setting for oracle (i.e. SERIALIZABLE)
+//ISOLATION_REPEATABLE_READ throws READ_COMMITTED and SERIALIZABLE are the only valid transaction levels
+donc
+jobLauncher.setTaskExecutor( new SyncTaskExecutor());+
+factory.setIsolationLevelForCreate("ISOLATION_SERIALIZABLE");= ne marche pas
+
+
+
+
+je reprends le même test mais avec
+jobLauncher.setTaskExecutor( new SyncTaskExecutor());
+factory.setIsolationLevelForCreate("ISOLATION_DEFAULT");
+==> pas de pb de creation de bean job avec la bean factory
+==> par contre n'arrive toujours pas à faire le job
+est-ce à cause de ce que dit le commentaire du net à savoir que transaction = multithread config?
+
+pour le savoir, je commente ces lignes :
+/*@Transactional(transactionManager="portailTransactionManager")
+    @Modifying*/
+    @Query("delete from DocumentPortail p where p.numsujet like :x")
+    public void deleteByNumSujet(@Param("x") String numSujet);
+
+car mon programme bloque ici :
+2020-04-22 21:36:50.953  INFO 12468 --- [           main] f.a.i.DocumentSujetsToDeleteProcessor    : verifNntIsNull = true
+if (verifNntIsNull) {
+            portailRepository.deleteByNumSujet(numSujetPortail);
+            sujetsRepository.deleteByIddoc(iddocStep);
+
+par contre, je ne commente pas le transactionnal sur sujetsRepository.deleteByIddoc(iddocStep);
+donc si l'erreur provient du besoin de multithread par @Transactionnal, le programme s'arretera à
+sujetsRepository.deleteByIddoc(iddocStep);
+je rajoute un log :
+portailRepository.deleteByNumSujet(numSujetPortail);
+logger.info("delete portail ok ");
+sujetsRepository.deleteByIddoc(iddocStep);
+logger.info("delete sujets ok ");
+
+==>résultat? il n'arrive pas sans le @Transactionnal
+org.springframework.retry.RetryException: Non-skippable exception in recoverer while processing;
+nested exception is org.springframework.dao.InvalidDataAccessApiUsageException: org.hibernate.hql.internal.QueryExecutionRequestException:
+Not supported for DML operations [delete from fr.abes.idsteptodeletetest.portail.entities.DocumentPortail p where p.numsujet like :x];
+nested exception is java.lang.IllegalStateException: org.hibernate.hql.internal.QueryExecutionRequestException:
+Not supported for DML operations [delete from fr.abes.idsteptodeletetest.portail.entities.DocumentPortail p where p.numsujet like :x]
+réponse ici :https://stackoverflow.com/questions/44022076/jparepository-not-supported-for-dml-operations-delete-query
+Whenever you are trying to modify a record in db, you have to mark it @Transactional as well as @Modifying, which instruct Spring that it
+can modify existing records.The repository method must be void or the exception keeps getting thrown.
+
+====> RESULTAT FINAL : on ne peut pas éviter le multithreading du moment qu'on a quelquechose à aller écrire dans la bdd en modification
+donc config.setMaximumPoolSize(1) n'est pas possible!!
+
+et comme j'ai la même erreur avec l'astuce @EnableBatchProcessing c'est donc qu'il fait du multithread par défaut
+donc que ce soit avec la classe jpabatchconfigurer :
+jobLauncher.setTaskExecutor(new SimpleAsyncTaskExecutor()); +
+factory.setIsolationLevelForCreate("ISOLATION_SERIALIZABLE");
+ou avec @EnableBatchProcessing
+il faut config.setMaximumPoolSize(2)
+
+donc en gros si on veut
+config.setMaximumPoolSize(1) on doit obligatoirement passer par la config :
+jobLauncher.setTaskExecutor( new SyncTaskExecutor());
+factory.setIsolationLevelForCreate("ISOLATION_DEFAULT");
+et si on a cette config, on ne peut pas avoir @Transactionnal sur nos query de repository
+et si on n'a pas @Transactionnal on a une erreur hibernate car dès qu'on veut modifier la bdd on doit avoir @Transactionnal
+
+autre chose avec la config @EnableBatchProcessing :
+avec la bonne config c.a.d config.setMaximumPoolSize(2), j'obtiens quand même une erreur :
+org.springframework.transaction.CannotCreateTransactionException: Could not open JPA EntityManager for transaction;
+nested exception is java.lang.IllegalStateException: Already value [org.springframework.jdbc.datasource.ConnectionHolder@13330ac6]
+for key [HikariDataSource (poolSujetsOnGoingToDelete)] bound to thread [main]
+donc peut-être que avec cette config, le @Transactionnal n'est pas necessaire sur les méthodes DML des repository
+
+
+déjà, est-ce que j'obtiens la même erreur en passant par la config jpabatchconfigurer?
+réponse : non.
+Donc il y a bien une différence de façon de gérer les transactions qu'on soit avec @EnableBatchProcessing ou à faire soit même
+les objets.
+Je modifie @Transactional(transactionManager="sujetsTransactionManager") sur mes methodes DML portail et sujet repository
+    @Transactional(transactionManager="sujetsTransactionManager", readOnly = false, propagation = Propagation.REQUIRED)
+comme indiqué ici : https://stackoverflow.com/questions/50173477/spring-boot-jpa-batch-cannotcreatetransactionexception
+===> ça marche pas, je relie et donc l'annotation ne va apparemment que sur les méthodes de la datasource déclarée @Primary
+
+Methods in @Service classes for primary db are annotated as:
+@Transactional(transactionManager = JpaAppsConfiguration.APPS_TRANSACTION_MANAGER, readOnly = false, propagation = Propagation.REQUIRED, noRollbackFor = Exception.class)
+
+j'enlève readOnly = false, propagation = Propagation.REQUIRED, noRollbackFor = Exception.class sur portail repository methodes DML
+=> ça marche pas
+
+je remarque que j'ai oublié @Primary sur public LocalContainerEntityManagerFactoryBean sujetsEntityManagerFactory() dans la config datasourcesujets
+je l'ajoute ==> ko quand même
+j'enlève complètement l'annotation @Transactionnal sur Portail rep method ==> ko
+
+donc je reviens sur jpabatchconfigurer.class et donc l'intégration d'@EnableBatchProcessing est complexe quand il s'agit de traiter des transactions (toutes opérations DML JPA)
+je n'ai pas testé : de changer les param hikari pour voir si idltimeout etc change quelque chose et
+je n'ai pas testé : https://stackoverflow.com/questions/50173477/spring-boot-jpa-batch-cannotcreatetransactionexception
+la config exactement comme elle est décrite avec persistence unit etc.
+
+
+
+
+
+autre point de config :
+avec l'astuce ou sans l'astuce @EnableBatchProcessing (http://www.hackerav.com/?post=17560)
+par défaut à l'execution du jar, il déroule tous les bean job.
+Si on veut pouvoir choisir en ligne de commande le job, il faut ajouter à la classe Application
+en plus des autres exclude
+exclude = { BatchAutoConfiguration.class
+en faisant cela, ça oblige spring à passer par sa config perso
+(moi je suis passée par implements ApplicationRunner, je recup les arguments de la ligne de commande, je parse, je fais une boucle sur les jobname,
+en envoyant pour chacun un job execution qui lui meme est un joblaucher de jobname+ parametres
+
+dans BatchConfigurer (cf astuce) j'ai mis :
+@Override
+    public void run(ApplicationArguments args) throws Exception {
+        List<String> jobListFromTerminal = args.getNonOptionArgs();
+        for(String jobName:jobListFromTerminal) {
+            try {
+                JobExecution jobExecution = createJobExecution(jobName);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
+    }
+
+    public JobExecution createJobExecution(String jobName) throws Exception {
+        Job job = (Job) ctx.getBean(jobName);
+        JobParameters jobParameters = new JobParametersBuilder().addLong("time", System.currentTimeMillis()).toJobParameters();
+        JobExecution execution = jobLauncher.run(job, jobParameters);
+        System.out.println("Exit Status : " + execution.getStatus());
+        System.out.println("Exit Status : " + execution.getAllFailureExceptions());
+        return execution;
+    }
+
+Sinon en dehors de l'astuce, avec la config qui déclare tous les beans dans jpabatchconfigurer, j'ai ajouté dans la méthode
+initialize qui est @PostConstruct :
+List<String> jobListFromTerminal = applicationArguments.getNonOptionArgs();
+for(String jobName:jobListFromTerminal) {
+this.jobExecution = createJobExecution(jobName);
+}
+et en dehors d'initialize le même code createJobExecution(String jobName)
+
+j'ai aussi testé avec @Bean("jobLauncherCommandLineRunner")
+for(String jobName:jobList) {
+            logger.info("jobName = " + jobName);
+            runner.setJobNames(jobName);
+            return runner;
+
+J'ai jamais réussi à faire comme dans la doc spring à savoir :
+en ligne de commande mettre :
+java -jar idsteptodeletetest-0.0.1-SNAPSHOT.jar CommandLineJobRunner fr.abes.idsteptodelete.SpringBatchConfig idStepToDelete-job
+à savoir la commande + le jar + la classe CommandLineJobRunner + param 1 de la classe CLJR = la classe qui contient le job + param 2 = le nom du job
+(la bonne pratique pour plusieurs jobs c'est de faire qu'ils soient des enfants de l'appli principale et avec chacun un applicationcontext)
+

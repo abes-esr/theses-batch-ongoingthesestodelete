@@ -1,3 +1,6 @@
+/*
+
+
 package fr.abes.idsteptodeletetest;
 
 import org.springframework.batch.core.Job;
@@ -46,7 +49,6 @@ public class BatchConfigurer extends DefaultBatchConfigurer implements Applicati
         System.out.println("Exit Status : " + execution.getAllFailureExceptions());
         return execution;
     }
-
-
-
 }
+
+*/

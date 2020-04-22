@@ -36,7 +36,9 @@ public class DocumentSujetsToDeleteProcessor implements ItemProcessor<DocumentSu
         logger.info("verifNntIsNull = " + verifNntIsNull);
         if (verifNntIsNull) {
             portailRepository.deleteByNumSujet(numSujetPortail);
+            logger.info("delete portail ok ");
             sujetsRepository.deleteByIddoc(iddocStep);
+            logger.info("delete sujets ok ");
         }
         return documentSujets;
     }

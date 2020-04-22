@@ -53,8 +53,8 @@ public class SujetsConfig
         config.setConnectionTimeout(30000);
         config.setIdleTimeout(35000);
         config.setMaxLifetime(45000);
-        //config.setMinimumIdle(1);
-        config.setMaximumPoolSize(1);
+        config.setMinimumIdle(1);
+        config.setMaximumPoolSize(2);
         config.getMetricsTrackerFactory();
         config.getMetricRegistry();
         config.getHealthCheckProperties();
@@ -83,7 +83,7 @@ public class SujetsConfig
         return new JpaTransactionManager(factory);
     }
 
-    //@Primary
+    @Primary
     @Bean
     public LocalContainerEntityManagerFactoryBean sujetsEntityManagerFactory()
     {
