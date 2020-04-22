@@ -13,11 +13,12 @@ import org.apache.logging.log4j.Logger;
 
 
 @SpringBootApplication(//scanBasePackages = {"fr.abes.idsteptodeletetest.JpaBatchConfigurer"},
-        scanBasePackageClasses = fr.abes.idsteptodeletetest.JpaBatchConfigurer.class,
+        //scanBasePackageClasses = fr.abes.idsteptodeletetest.JpaBatchConfigurer.class,
         exclude = { DataSourceAutoConfiguration.class,
                 HibernateJpaAutoConfiguration.class,
                 DataSourceTransactionManagerAutoConfiguration.class,
-                BatchAutoConfiguration.class}
+                BatchAutoConfiguration.class //si on ne met pas ça, il déroule tous les beans job avec resultat NOOP
+        }
 )
 @EnableTransactionManagement
 public class IdsteptodeletetestApplication {

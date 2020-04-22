@@ -1,3 +1,4 @@
+/*
 
 package fr.abes.idsteptodeletetest;
 
@@ -191,7 +192,8 @@ public class JpaBatchConfigurer implements BatchConfigurer {
     }
 
 
-    /* good but not allowing to get a list of job; we can only lauch one job; in this case, the log output says : skipped thisjob, and this job...
+    */
+/* good but not allowing to get a list of job; we can only lauch one job; in this case, the log output says : skipped thisjob, and this job...
     the JobLauncherCommandLineRunner uses different objects ( the JobRegistry map so it is necessary to register the job before using it)
     @Bean("jobLauncherCommandLineRunner")
     public JobLauncherCommandLineRunner jobLauncherCommandLineRunner(JobLauncher jobLauncher, JobExplorer jobExplorer) throws JobExecutionException {
@@ -205,8 +207,10 @@ public class JpaBatchConfigurer implements BatchConfigurer {
             //runner.run(jobName);
             return runner;
         }return null;
-    }*/
+    }*//*
+
 
 
 
 }
+*/
