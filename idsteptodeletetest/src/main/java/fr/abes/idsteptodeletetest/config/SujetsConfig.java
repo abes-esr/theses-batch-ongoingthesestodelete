@@ -40,24 +40,11 @@ public class SujetsConfig
         return new DataSourceProperties();
     }
 
-    /*@Primary
-    @Bean(name= "sujetsDataSource")
-    public DataSource sujetsDataSource() {
-        DataSourceProperties sujetsDataSourceProperties = sujetsDataSourceProperties();
-        return DataSourceBuilder.create()
-                .driverClassName(sujetsDataSourceProperties.getDriverClassName())
-                .url(sujetsDataSourceProperties.getUrl())
-                .username(sujetsDataSourceProperties.getUsername())
-                .password(sujetsDataSourceProperties.getPassword())
-                .build();
-    }*/
-
     @Primary
     @Bean(name= "sujetsDataSource")
     public DataSource sujetsDataSource() {
         HikariConfig config = new HikariConfig();
         config.setDriverClassName(env.getProperty("sujets.datasource.driver-class-name"));
-        //config.setDataSourceClassName(env.getProperty("sujets.datasource.class-name"));
         config.setJdbcUrl(env.getProperty("sujets.datasource.url"));
         config.setUsername(env.getProperty("sujets.datasource.username"));
         config.setPassword(env.getProperty("sujets.datasource.password"));
@@ -80,16 +67,8 @@ public class SujetsConfig
         config.setValidationTimeout(2500);
         config.setConnectionTestQuery("SELECT 1 FROM DUAL");
 
-        //config.addDataSourceProperty("validationInterval", env.getProperty("sujets.datasource.validationInterval"));
-        //config.addDataSourceProperty("testOnBorrow", env.getProperty("sujets.datasource.testOnBorrow"));
-        //config.addDataSourceProperty("testWhileIdle", env.getProperty("sujets.datasource.testWhileIdle"));
-        //config.addDataSourceProperty("testOnReturn", env.getProperty("sujets.datasource.testOnReturn"));
-        //config.addDataSourceProperty("timeBetweenEvictionRunsMillis", env.getProperty("sujets.datasource.timeBetweenEvictionRunsMillis"));
-        //config.addDataSourceProperty("validationQuery", env.getProperty("sujets.datasource.validationQuery"));
         config.addDataSourceProperty("implicitCachingEnabled", "true"); //spec oracle
         config.addDataSourceProperty("maxStatements", "250"); //spec oracle
-        //config.addDataSourceProperty("prepStmtCacheSize", "250");
-        //config.addDataSourceProperty("prepStmtCacheSqlLimit", "2048");
 
         return new HikariDataSource(config);
 
@@ -114,7 +93,6 @@ public class SujetsConfig
         factory.setJpaVendorAdapter(new HibernateJpaVendorAdapter());
 
         Properties jpaProperties = new Properties();
-        //jpaProperties.put("hibernate.hbm2ddl.auto", env.getProperty("spring.jpa.hibernate.ddl-auto"));
         jpaProperties.put("hibernate.show-sql", env.getProperty("spring.jpa.show-sql"));
         factory.setJpaProperties(jpaProperties);
 
@@ -127,9 +105,6 @@ public class SujetsConfig
     {
         DataSourceInitializer dataSourceInitializer = new DataSourceInitializer();
         dataSourceInitializer.setDataSource(sujetsDataSource());
-        /*ResourceDatabasePopulator databasePopulator = new ResourceDatabasePopulator();
-        databasePopulator.addScript(new ClassPathResource("sujets-data.sql"));
-        dataSourceInitializer.setDatabasePopulator(databasePopulator);*/
         dataSourceInitializer.setEnabled(env.getProperty("sujets.datasource.initialize", Boolean.class, false));
         return dataSourceInitializer;
     }

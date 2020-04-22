@@ -38,17 +38,6 @@ public class PortailConfig
         return new DataSourceProperties();
     }
 
-    /*@Bean
-    public DataSource portailDataSource() {
-        DataSourceProperties portailDataSourceProperties = portailDataSourceProperties();
-        return DataSourceBuilder.create()
-                .driverClassName(portailDataSourceProperties.getDriverClassName())
-                .url(portailDataSourceProperties.getUrl())
-                .username(portailDataSourceProperties.getUsername())
-                .password(portailDataSourceProperties.getPassword())
-                .build();
-    }*/
-
     @Bean
     public DataSource portailDataSource() {
         //Essentials
@@ -87,8 +76,6 @@ public class PortailConfig
         //config.addDataSourceProperty("validationQuery", env.getProperty("portail.datasource.validationQuery"));
         config.addDataSourceProperty("implicitCachingEnabled", "true"); //spec oracle
         config.addDataSourceProperty("maxStatements", "250"); //spec oracle
-        //config.addDataSourceProperty("prepStmtCacheSize", "250");
-        //config.addDataSourceProperty("prepStmtCacheSqlLimit", "2048");
         return new HikariDataSource(config);
 
     }
@@ -109,7 +96,6 @@ public class PortailConfig
         factory.setJpaVendorAdapter(new HibernateJpaVendorAdapter());
 
         Properties jpaProperties = new Properties();
-        //jpaProperties.put("hibernate.hbm2ddl.auto", env.getProperty("spring.jpa.hibernate.ddl-auto"));
         jpaProperties.put("hibernate.show-sql", env.getProperty("spring.jpa.show-sql"));
         factory.setJpaProperties(jpaProperties);
 
@@ -121,9 +107,6 @@ public class PortailConfig
     {
         DataSourceInitializer dataSourceInitializer = new DataSourceInitializer();
         dataSourceInitializer.setDataSource(portailDataSource());
-        /*ResourceDatabasePopulator databasePopulator = new ResourceDatabasePopulator();
-        databasePopulator.addScript(new ClassPathResource("portail-data.sql"));
-        dataSourceInitializer.setDatabasePopulator(databasePopulator);*/
         dataSourceInitializer.setEnabled(env.getProperty("portail.datasource.initialize", Boolean.class, false));
         return dataSourceInitializer;
     }

@@ -64,7 +64,7 @@ public class SpringBatchConfig {
                 .retryLimit(6)
                 .build();
 
-        return jobBuilderFactory.get("idStepToDelete-jobName")
+        return jobBuilderFactory.get("idStepToDeleteJobName")
                 .start(step1).build();
     }
 
@@ -92,7 +92,7 @@ public class SpringBatchConfig {
 
     }
 
-    @Bean("unautrejobBean")
+    @Bean("unAutreJobBean")
     public Job unAutreJob() {
 
 
@@ -108,7 +108,7 @@ public class SpringBatchConfig {
                 .retryLimit(6)
                 .build();
 
-        return jobBuilderFactory.get("unautre-jobName")
+        return jobBuilderFactory.get("unAutreJobName")
                 .start(step1).build();
     }
 
