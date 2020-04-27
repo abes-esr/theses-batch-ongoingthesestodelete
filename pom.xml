@@ -9,28 +9,81 @@
         <relativePath/> <!-- lookup parent from repository -->
     </parent>
     <groupId>fr.abes</groupId>
-    <artifactId>testrestcontrollerinterface</artifactId>
+    <artifactId>ongoingthesestodelete</artifactId>
     <version>0.0.1-SNAPSHOT</version>
-    <name>testrestcontrollerinterface</name>
+    <name>ongoingthesestodelete</name>
     <description>Demo project for Spring Boot</description>
 
     <properties>
-        <java.version>1.8</java.version>
+        <java.version>11</java.version>
     </properties>
-    <packaging>war</packaging>
 
     <dependencies>
-
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter</artifactId>
+            <exclusions>
+                <exclusion>
+                    <groupId>org.springframework.boot</groupId>
+                    <artifactId>spring-boot-starter-logging</artifactId>
+                </exclusion>
+            </exclusions>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-log4j2</artifactId>
+        </dependency>
 
         <dependency>
             <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-starter-web</artifactId>
+            <artifactId>spring-boot-starter-data-jpa</artifactId>
         </dependency>
+
+        <!--<dependency> spring boot 1
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-data-jpa</artifactId>
+            <exclusions>
+                <exclusion>
+                    <groupId>org.apache.tomcat</groupId>
+                    <artifactId>tomcat-jdbc</artifactId>
+                </exclusion>
+            </exclusions>
+        </dependency>-->
 
         <dependency>
             <groupId>org.projectlombok</groupId>
             <artifactId>lombok</artifactId>
             <optional>true</optional>
+        </dependency>
+
+        <!--<dependency>
+            <groupId>org.hibernate</groupId>
+            <artifactId>hibernate-validator</artifactId>
+            <version>4.2.0.Final</version>
+        </dependency>-->
+
+        <dependency>
+            <groupId>oracle.ojdbc</groupId>
+            <artifactId>ojdbc</artifactId>
+            <version>12.1.0.1.0</version>
+        </dependency>
+
+        <dependency>
+            <groupId>oracle.ojdbc</groupId>
+            <artifactId>xdb6</artifactId>
+            <version>12.1.0.1.0</version>
+        </dependency>
+
+        <dependency>
+            <groupId>oracle.ojdbc</groupId>
+            <artifactId>xmlparserv2</artifactId>
+            <version>11.2.0.3.0</version>
+        </dependency>
+
+        <dependency>
+            <groupId>javax.inject</groupId>
+            <artifactId>javax.inject</artifactId>
+            <version>1</version>
         </dependency>
 
         <dependency>
@@ -45,14 +98,15 @@
             </exclusions>
         </dependency>
         <dependency>
-            <groupId>javax.inject</groupId>
-            <artifactId>javax.inject</artifactId>
-            <version>1</version>
-            <scope>compile</scope>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-batch</artifactId>
         </dependency>
+
+
+
         <!--<dependency>
             <groupId>fr.abes</groupId>
-            <artifactId>idsteptodeletetest</artifactId>
+            <artifactId>testrestcontrollerinterface</artifactId>
             <version>0.0.1-SNAPSHOT</version>
             <scope>compile</scope>
         </dependency>-->
