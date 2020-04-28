@@ -13,7 +13,7 @@ import org.springframework.transaction.annotation.EnableTransactionManagement;
 
 
 @SpringBootApplication(//scanBasePackages = {"fr.abes.ongoingthesestodelete.JpaBatchConfigurer"},
-        scanBasePackageClasses = fr.abes.ongoingthesestodelete.JpaBatchConfigurer.class,
+        //scanBasePackageClasses = fr.abes.ongoingthesestodelete.JpaBatchConfigurer.class,
         exclude = { DataSourceAutoConfiguration.class,
                 HibernateJpaAutoConfiguration.class,
                 DataSourceTransactionManagerAutoConfiguration.class,
