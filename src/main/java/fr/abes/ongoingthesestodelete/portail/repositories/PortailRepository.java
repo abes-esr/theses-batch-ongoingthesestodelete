@@ -16,6 +16,9 @@ public interface PortailRepository extends JpaRepository<DocumentPortail, Intege
     @Query("select p.doc from DocumentPortail p where p.iddoc like :x")
     public String getTefByIddoc(@Param("x") int iddoc);
 
+    @Query("select p.iddoc from DocumentPortail p where p.numsujet like :x")
+    Integer getIddocByNumsujet(@Param("x") String numsujet);
+
     @Query("select p.texte from DocumentPortail p where p.iddoc like :x")
     public Clob getTexteByIddoc(@Param("x") int iddoc);
 
@@ -25,5 +28,5 @@ public interface PortailRepository extends JpaRepository<DocumentPortail, Intege
     @Transactional(transactionManager="portailTransactionManager")
     @Modifying
     @Query("delete from DocumentPortail p where p.numsujet like :x")
-    public void deleteByNumSujet(@Param("x") String numSujet);
+    int deleteByNumSujet(@Param("x") String numSujet);
 }
