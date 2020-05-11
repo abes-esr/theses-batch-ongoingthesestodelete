@@ -11,8 +11,6 @@ import org.springframework.stereotype.Component;
 import org.apache.commons.lang3.StringUtils;
 
 
-//si on a un seul processor et qu'on le definit pas dans la classe de config
-//si on a un composite de processor, et qu'on instancie le composite dans la classe de config, pas d'annotation @Component
 @Component
 public class DocumentSujetsToDeleteProcessor implements ItemProcessor<DocumentSujets,DocumentSujets> {
 
@@ -38,8 +36,13 @@ public class DocumentSujetsToDeleteProcessor implements ItemProcessor<DocumentSu
         numSujetPortail ="s"+ iddocStep;
         logger.info("debut process pour iddocStep = " + iddocStep);
         //logger.info("numSujetPortail = " + numSujetPortail);
+
+        //first we have to get the tef from the database
         tef = sujetsRepository.getTefByIddoc(iddocStep);
         //logger.info("tef = " + tef);
+
+        //then we have to know the status of the thesis
+        //the rule is : if stepEtat = these we don't delete the doc inside the databases, neither Step one, neither Portail if existing
         statutThese = StringUtils.substringBetween(tef, "stepEtat=\"", "\">");
         //logger.info("statutThese = " + statutThese);
         if(tef!=null) {
@@ -63,27 +66,8 @@ public class DocumentSujetsToDeleteProcessor implements ItemProcessor<DocumentSu
             }
         }
         else {
-            logger.info("tef = null ou iddocStep " + iddocStep + " inexistant en bdd." );
+            logger.info("tef = null ou iddocStep " + iddocStep + " inexistant en bdd sujets." );
         }
-
-
-
-
-        //va voir le stef etat
-        //these dans bdd sujets trouvée ou non trouvée
-        //si stefetat = pas these
-            //delete sujet => delete sujets ko ou delete sujets ok
-            //delete portail => these dans bdd portail trouvée ou non trouvée
-            //delete portail => delete portail ko ou delete portail ok
-        //sinon stefetat = these donc pas de delete
-        /*verifNntIsNull = portailRepository.verifNntIsNull(numSujetPortail);
-        logger.info("verifNntIsNull = " + verifNntIsNull);
-        if (verifNntIsNull) {
-            portailRepository.deleteByNumSujet(numSujetPortail);
-            logger.info("delete portail ok ");
-            sujetsRepository.deleteByIddoc(iddocStep);
-            logger.info("delete sujets ok ");
-        }*/
         return documentSujets;
     }
 }

@@ -159,7 +159,7 @@ public class JpaBatchConfigurer implements BatchConfigurer {
 
     protected JobRepository createJobRepository() throws Exception {
         JobRepositoryFactoryBean factory = new JobRepositoryFactoryBean();
-        factory.setIsolationLevelForCreate("ISOLATION_READ_COMMITTED");
+        factory.setIsolationLevelForCreate("ISOLATION_READ_COMMITTED"); //be carefull with the choice we do; these 3 are possible, it depends which config we choose
         //factory.setIsolationLevelForCreate("ISOLATION_SERIALIZABLE");
         //factory.setIsolationLevelForCreate("ISOLATION_DEFAULT");
         factory.setDataSource(dataSource);
@@ -183,31 +183,6 @@ public class JpaBatchConfigurer implements BatchConfigurer {
     public JobLocator jobLocator() {
         return new MapJobRegistry();
     }
-
-
-
-
-
-/* good but not allowing to get a list of job; we can only lauch one job; in this case, the log output says : skipped thisjob, and this job...
-    the JobLauncherCommandLineRunner uses different objects ( the JobRegistry map so it is necessary to register the job before using it)
-    @Bean("jobLauncherCommandLineRunner")
-    public JobLauncherCommandLineRunner jobLauncherCommandLineRunner(JobLauncher jobLauncher, JobExplorer jobExplorer) throws JobExecutionException {
-        JobLauncherCommandLineRunner runner = new JobLauncherCommandLineRunner(jobLauncher, jobExplorer, jobRepository);
-        ApplicationArguments a = ctx.getBean(ApplicationArguments.class);
-        List<String> jobList = a.getNonOptionArgs();
-        logger.info("jobList = " + jobList.toString());
-        for(String jobName:jobList) {
-            logger.info("jobName = " + jobName);
-            runner.setJobNames(jobName);
-            //runner.run(jobName);
-            return runner;
-        }return null;
-    }*/
-
-
-
-
-
 
 }
 

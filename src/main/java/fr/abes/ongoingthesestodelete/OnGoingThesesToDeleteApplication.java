@@ -12,12 +12,11 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
 
 
-@SpringBootApplication(//scanBasePackages = {"fr.abes.ongoingthesestodelete.JpaBatchConfigurer"},
-        //scanBasePackageClasses = fr.abes.ongoingthesestodelete.JpaBatchConfigurer.class,
+@SpringBootApplication(
         exclude = { DataSourceAutoConfiguration.class,
                 HibernateJpaAutoConfiguration.class,
                 DataSourceTransactionManagerAutoConfiguration.class,
-                BatchAutoConfiguration.class //si on ne met pas ça, il déroule tous les beans job avec resultat NOOP
+                BatchAutoConfiguration.class //if not, all the jobs are launched with NOOP results at the end of each process
         }
 )
 @EnableTransactionManagement
