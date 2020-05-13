@@ -1,11 +1,14 @@
 package fr.abes.ongoingthesestodelete;
 
 
+import fr.abes.ongoingthesestodelete.duplicatesNntPortail.DocumentPortailToDeleteDuplicationsTasklet;
+import fr.abes.ongoingthesestodelete.portail.entities.DocumentPortail;
 import fr.abes.ongoingthesestodelete.sujets.entities.DocumentSujets;
 import org.springframework.batch.core.Job;
 import org.springframework.batch.core.Step;
 import org.springframework.batch.core.configuration.annotation.JobBuilderFactory;
 import org.springframework.batch.core.configuration.annotation.StepBuilderFactory;
+import org.springframework.batch.core.step.tasklet.Tasklet;
 import org.springframework.batch.item.ItemProcessor;
 import org.springframework.batch.item.ItemReader;
 import org.springframework.batch.item.ItemWriter;
@@ -19,6 +22,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.io.Resource;
 
@@ -26,11 +30,15 @@ import javax.sql.DataSource;
 
 
 @Configuration
+@ComponentScan(basePackageClasses  = DocumentPortailToDeleteDuplicationsTasklet.class)
 public class SpringBatchConfig {
+
     @Autowired
     private JobBuilderFactory jobBuilderFactory;
     @Autowired
     private StepBuilderFactory stepBuilderFactory;
+
+    //--------------------attributs sujets job--------------------------------------
     @Autowired
     private ItemReader<DocumentSujets> documentSujetsToDeleteReader;
     @Autowired
@@ -38,16 +46,26 @@ public class SpringBatchConfig {
     @Autowired
     private ItemProcessor<DocumentSujets,DocumentSujets> documentSujetsToDeleteProcessor; //si on a un seul processor
     @Qualifier("sujetsDataSource")
-    private DataSource dataSource;
+    private DataSource dataSourceSujets;
     @Qualifier("sujetsDataSource")
     private ItemPreparedStatementSetter<DocumentSujets> setter;
 
+    //--------------------attributs portail job--------------------------------------
 
+    @Autowired
+    private Tasklet documentPortailToDeleteDuplications;
+    @Qualifier("portailDataSource")
+    private DataSource dataSourcePortail;
+    @Qualifier("portailDataSource")
+    private ItemPreparedStatementSetter<DocumentPortail> setter2;
+
+
+    //--------------------sujets job--------------------------------------
     @Bean("idStepToDeleteJobBean")
     public Job idStepToDeleteJob() {
 
 
-        DataSource datasource;
+        DataSource datasourceSujets;
 
         Step step1=stepBuilderFactory.get("step-delete-data")
                 .<DocumentSujets,DocumentSujets>chunk(100)
@@ -87,23 +105,19 @@ public class SpringBatchConfig {
 
     }
 
-    @Bean("unAutreJobBean")
-    public Job unAutreJob() {
+    //--------------------portail job--------------------------------------
+
+    @Bean("duplicatesNntPortailToDeleteJobBean")
+    public Job duplicatesNntPortailToDeleteJob() {
 
 
         DataSource datasource;
 
-        Step step1=stepBuilderFactory.get("unautrejob-delete-data")
-                .<DocumentSujets,DocumentSujets>chunk(100)
-                .reader(documentSujetsToDeleteReader)
-                .processor(documentSujetsToDeleteProcessor) //si on a un seul processor
-                .writer(documentSujetsToDeleteWriter)
-                .faultTolerant()
-                .retry(Exception.class)
-                .retryLimit(6)
+        Step step1=stepBuilderFactory.get("duplicatesNnt-delete-data")
+                .tasklet(documentPortailToDeleteDuplications)
                 .build();
 
-        return jobBuilderFactory.get("unAutreJobName")
+        return jobBuilderFactory.get("duplicatesNntPortailToDeleteJobName")
                 .start(step1).build();
     }
 

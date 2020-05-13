@@ -9,6 +9,7 @@ import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.sql.Clob;
+import java.util.ArrayList;
 
 @Repository
 public interface PortailRepository extends JpaRepository<DocumentPortail, Integer> {
@@ -29,4 +30,16 @@ public interface PortailRepository extends JpaRepository<DocumentPortail, Intege
     @Modifying
     @Query("delete from DocumentPortail p where p.numsujet like :x")
     int deleteByNumSujet(@Param("x") String numSujet);
+
+    @Query("select p.iddoc from DocumentPortail p where p.nnt like :x")
+    ArrayList<Integer> getDuplicatesIddocList(@Param("x") String nnt);
+
+    @Query(value ="SELECT p.NNT FROM Document p GROUP BY p.NNT HAVING COUNT(p.NNT) > 1", nativeQuery = true)
+    ArrayList<String> getDuplicatesNntList();
+
+    @Transactional(transactionManager="portailTransactionManager")
+    @Modifying
+    @Query("delete from DocumentPortail p where p.iddoc like :x")
+    int deleteByIddoc(@Param("x") int iddoc);
+
 }
