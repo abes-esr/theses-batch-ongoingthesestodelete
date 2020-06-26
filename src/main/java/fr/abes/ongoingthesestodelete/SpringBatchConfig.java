@@ -1,7 +1,5 @@
 package fr.abes.ongoingthesestodelete;
 
-
-import fr.abes.ongoingthesestodelete.duplicatesNntPortail.DocumentPortailToDeleteDuplicationsTasklet;
 import fr.abes.ongoingthesestodelete.portail.entities.DocumentPortail;
 import fr.abes.ongoingthesestodelete.sujets.entities.DocumentSujets;
 import org.springframework.batch.core.Job;
@@ -22,7 +20,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.io.Resource;
 
@@ -30,13 +27,15 @@ import javax.sql.DataSource;
 
 
 @Configuration
-@ComponentScan(basePackageClasses  = DocumentPortailToDeleteDuplicationsTasklet.class)
 public class SpringBatchConfig {
 
     @Autowired
     private JobBuilderFactory jobBuilderFactory;
     @Autowired
     private StepBuilderFactory stepBuilderFactory;
+
+    @Autowired
+    JpaBatchConfigurer jpaBatchConfigurer;
 
     //--------------------attributs sujets job--------------------------------------
     @Autowired
@@ -49,6 +48,7 @@ public class SpringBatchConfig {
     private DataSource dataSourceSujets;
     @Qualifier("sujetsDataSource")
     private ItemPreparedStatementSetter<DocumentSujets> setter;
+
 
     //--------------------attributs portail job--------------------------------------
 
@@ -66,6 +66,7 @@ public class SpringBatchConfig {
 
 
         DataSource datasourceSujets;
+        //JobRepository jb = jpaBatchConfigurer.getJobRepository();
 
         Step step1=stepBuilderFactory.get("step-delete-data")
                 .<DocumentSujets,DocumentSujets>chunk(100)
@@ -105,6 +106,7 @@ public class SpringBatchConfig {
 
     }
 
+
     //--------------------portail job--------------------------------------
 
     @Bean("duplicatesNntPortailToDeleteJobBean")
@@ -120,5 +122,4 @@ public class SpringBatchConfig {
         return jobBuilderFactory.get("duplicatesNntPortailToDeleteJobName")
                 .start(step1).build();
     }
-
 }

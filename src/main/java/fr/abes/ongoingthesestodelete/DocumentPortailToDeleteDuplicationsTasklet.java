@@ -1,4 +1,4 @@
-package fr.abes.ongoingthesestodelete.duplicatesNntPortail;
+package fr.abes.ongoingthesestodelete;
 
 import fr.abes.ongoingthesestodelete.portail.repositories.PortailRepository;
 import org.apache.logging.log4j.LogManager;

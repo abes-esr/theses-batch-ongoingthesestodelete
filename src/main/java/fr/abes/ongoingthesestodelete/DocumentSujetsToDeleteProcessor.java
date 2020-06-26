@@ -3,12 +3,12 @@ package fr.abes.ongoingthesestodelete;
 import fr.abes.ongoingthesestodelete.portail.repositories.PortailRepository;
 import fr.abes.ongoingthesestodelete.sujets.entities.DocumentSujets;
 import fr.abes.ongoingthesestodelete.sujets.repositories.SujetsRepository;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.batch.item.ItemProcessor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
-import org.apache.commons.lang3.StringUtils;
 
 
 @Component
